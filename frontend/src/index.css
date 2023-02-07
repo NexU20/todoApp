@@ -8,12 +8,8 @@
     opacity: 1;
   }
 
-  50% {
-    opacity: 1;
-  }
-
   100% {
-    transform: translateX(-150px);
+    transform: translateX(-100%);
     opacity: 0;
   }
 }

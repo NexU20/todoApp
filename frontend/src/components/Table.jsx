@@ -33,7 +33,7 @@ export default function Table() {
 
     return jadwal.map((e, i) => (
       <tr key={i}>
-        <td id={e._id}>{i + 1}</td>
+        <td>{i + 1}</td>
         <td>{e.kegiatan}</td>
         <td>{new Date(e.tanggal).toDateString()}</td>
         <td>
@@ -73,16 +73,17 @@ export default function Table() {
     if (!data.status) {
       alert("Ada yang tidak Beres");
     }
+
+    updateDatas();
   }
 
-  function removeAnimate({ target }, id) {
+  async function removeAnimate({ target }, id) {
     const row = target.parentElement.parentElement;
 
     row.classList.add("removed");
 
     row.addEventListener("animationend", async () => {
       await removeList(id);
-
       await updateDatas();
 
       row.classList.remove("removed");
