@@ -1,7 +1,6 @@
-import writeData from "./write-jadwal.js";
-import * as fs from "fs";
 import { MongoClient, ObjectId } from "mongodb";
 import * as dotenv from "dotenv";
+import { validateDate } from "./utills.js";
 
 dotenv.config();
 
@@ -11,14 +10,6 @@ await client.connect();
 const db = client.db("explore");
 const collection = db.collection("todo-lists");
 
-// * read jadwal from data.json
-const readJadwalData = () => {
-  let data = fs.readFileSync("./data.json");
-  data = JSON.parse(data);
-
-  return data;
-};
-
 export async function getJadwal(req, res) {
   const json = await collection.find().toArray();
 
@@ -26,23 +17,30 @@ export async function getJadwal(req, res) {
 }
 
 export async function addJadwal(req, res) {
-  const { kegiatan, tanggal } = req.body;
-
-  const obj = {
-    kegiatan,
-    tanggal,
-  };
-
-  const respon = await collection.insertOne(obj);
+  let { kegiatan, tanggal } = req.body;
 
   let stat = { status: 1 };
 
-  if (!respon.acknowledged) {
-    stat.status = 0;
-    res.status(404).json(stat);
-  }
+  const isDate = validateDate(tanggal);
 
-  res.json(stat);
+  if (!isDate) {
+    stat.status == 0;
+    res.status(400).json(stat);
+  } else {
+    const obj = {
+      kegiatan,
+      tanggal: new Date(tanggal),
+    };
+
+    const respon = await collection.insertOne(obj);
+
+    if (!respon.acknowledged) {
+      stat.status = 0;
+      res.status(400).json(stat);
+    }
+
+    res.json(stat);
+  }
 }
 
 export async function deleteJadwal(req, res) {
@@ -64,22 +62,22 @@ export async function deleteJadwal(req, res) {
   res.json(stat);
 }
 
-export async function editJadwal(req, res) {
-  const ID = req.body.id;
-  const kegiatan = req.body.kegiatan;
-  const tanggal = req.body.tanggal;
+// export async function editJadwal(req, res) {
+//   const ID = req.body.id;
+//   const kegiatan = req.body.kegiatan;
+//   const tanggal = req.body.tanggal;
 
-  let data = readJadwalData();
+//   let data = readJadwalData();
 
-  let item = data.find((e) => e.id == ID);
-  item.kegiatan = kegiatan;
-  item.tanggal = tanggal;
+//   let item = data.find((e) => e.id == ID);
+//   item.kegiatan = kegiatan;
+//   item.tanggal = tanggal;
 
-  const respon = writeData(data);
+//   const respon = writeData(data);
 
-  if (respon == "err") {
-    res.status(404);
-  }
+//   if (respon == "err") {
+//     res.status(404);
+//   }
 
-  res.send("OK");
-}
+//   res.send("OK");
+// }

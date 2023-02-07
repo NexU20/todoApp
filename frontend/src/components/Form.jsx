@@ -1,9 +1,33 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 
-export default function AddListForm({ update }) {
+export default function AddListForm({ updateData }) {
   const [tanggal, setTanggal] = useState("");
   const [kegiatan, setKegiatan] = useState("");
+  const spanInp = useRef();
+  const inpText = useRef();
+
+  function inpAnimateIn() {
+    spanInp.current.style.translate = "0 -25px";
+    spanInp.current.style.zIndex = "2";
+    spanInp.current.style.fontSize = "11px";
+
+    inpText.current.style.borderColor = "green";
+  }
+
+  function inpAnimateOut() {
+    spanInp.current.style.translate = "0 0";
+    spanInp.current.style.zIndex = "-1";
+    spanInp.current.style.fontSize = "12px";
+
+    inpText.current.style.borderColor = "#4d4c4c";
+  }
+
+  function inpBlurHandle() {
+    if (!kegiatan) {
+      inpAnimateOut();
+    }
+  }
 
   async function addData(e) {
     e.preventDefault();
@@ -34,21 +58,29 @@ export default function AddListForm({ update }) {
       alert("Gagal. Sepertinya ada yang tidak beres");
     }
 
-    update();
+    updateData();
 
     setKegiatan("");
     setTanggal("");
+
+    inpAnimateOut();
   }
 
   return (
     <form autoComplete="off" id="add-kegiatan" onSubmit={(e) => addData(e)}>
+      <h1>Tambah Kegiatan</h1>
+      <br />
       <div className="input">
-        <label htmlFor="do">Kegiatan:</label>
+        <span ref={spanInp}>
+          <label htmlFor="do">Isi Kegiatan</label>
+        </span>
         <input
+          ref={inpText}
+          onFocus={() => inpAnimateIn()}
+          onBlur={() => inpBlurHandle()}
           type="text"
           name="kegiatan"
           id="do"
-          placeholder="Isi Kegiatan..."
           onChange={(e) => setKegiatan(e.target.value)}
           value={kegiatan}
           required
@@ -56,13 +88,13 @@ export default function AddListForm({ update }) {
       </div>
 
       <div className="input">
-        <label htmlFor="tgl">Kegiatan:</label>
+        <label htmlFor="tgl">Tanggal:</label>
         <input
-          type="text"
+          type="date"
           name="tanggal"
           id="tgl"
           placeholder="Tanggal Berapa?..."
-          onChange={(e) => setTanggal(e.target.value)}
+          onInput={(e) => setTanggal(e.target.value)}
           value={tanggal}
           required
         />
