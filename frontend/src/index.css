@@ -3,6 +3,21 @@
   padding: 0;
 }
 
+@keyframes removed {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(-150px);
+    opacity: 0;
+  }
+}
+
 body {
   /* background-color: rgb(43, 43, 43); */
   background-color: rgb(228, 228, 228);
@@ -12,8 +27,9 @@ body {
 }
 
 #app {
-  display: grid;
-  place-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .btn {
@@ -29,7 +45,32 @@ body {
 }
 
 .green-btn {
-  background-color: rgb(25, 151, 25);
+  background-color: rgb(1, 128, 1);
+}
+
+.remove-btn {
+  cursor: pointer;
+}
+
+.remove-btn {
+  cursor: pointer;
+  padding: 10px;
+  transition: color 0.3s;
+}
+
+.remove-btn:hover {
+  color: rgb(194, 15, 15);
+}
+
+.remove-btn:active {
+  color: rgb(255, 60, 60);
+}
+
+.removed {
+  animation-name: removed;
+  animation-duration: 200ms;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
 }
 
 header {
@@ -43,7 +84,11 @@ header font {
 /* end of header styles */
 
 main {
-  padding: 2em 2em;
+  padding: 2rem;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
 }
 
 #add {
@@ -67,6 +112,7 @@ main form .input {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  position: relative;
 }
 
 main form input {
@@ -78,6 +124,30 @@ main form input {
   outline: none;
   transition: all 0.3s;
   width: 50%;
+  z-index: 1;
+}
+
+main form input[type="text"] {
+  padding: 1rem;
+  border: 2px solid #4d4c4c;
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+main form .input > span {
+  background-color: rgb(228, 228, 228);
+  padding: 10px;
+  border-radius: 10px;
+  position: absolute;
+  align-self: flex-start;
+  bottom: 9px;
+  color: rgb(100, 100, 100);
+  z-index: -1;
+  left: 9px;
+  font-size: 0.8rem;
+  transition: all 0.3s;
 }
 
 main form button {
@@ -85,13 +155,10 @@ main form button {
   border-radius: 0 !important;
 }
 
-main form input:focus {
-  border-bottom: 2px solid rgb(25, 151, 25);
+main form input[type="date"] {
   width: 100%;
-}
-
-main form input[type="text"] {
-  margin-top: 5px;
+  padding: 1rem 5px;
+  box-sizing: border-box;
 }
 
 main form input::placeholder {
@@ -100,9 +167,11 @@ main form input::placeholder {
 
 table {
   margin-top: 2em;
-  width: 800px;
+  width: 100%;
+  max-width: 800px;
   text-align: center;
   border-spacing: 0;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
 }
 
 table thead tr {
@@ -110,14 +179,17 @@ table thead tr {
   background-color: #4d4c4c;
 }
 
-table tbody tr:nth-child(odd) {
-  background-color: #818181;
+table tbody tr {
   color: #000000;
+  transition: all 0.3s;
+}
+
+table tbody tr:nth-child(odd) {
+  background-color: rgb(228, 228, 228);
 }
 
 table tbody tr:nth-child(even) {
-  background-color: rgb(77, 76, 76);
-  color: #ffffff;
+  background-color: rgb(153, 153, 153);
 }
 
 th:not(tr th:last-child),
@@ -125,7 +197,12 @@ td:not(tr td:last-child) {
   border-right: 1px solid rgba(43, 43, 43, 0.8);
 }
 
-th:not(tr:nth-child(1)),
-td:not(tr:nth-child(1)) {
-  padding: 1em;
+tr th:nth-child(1),
+tr th:nth-child(1) {
+  padding: 1rem;
+}
+
+th:not(tr th:nth-child(1)),
+td:not(tr th:nth-child(1)) {
+  padding: 2rem 1rem;
 }

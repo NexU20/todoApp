@@ -1,10 +1,5 @@
 import express from "express";
-import {
-  addJadwal,
-  getJadwal,
-  editJadwal,
-  deleteJadwal,
-} from "./controller.js";
+import { addJadwal, getJadwal, deleteJadwal } from "./controller.js";
 
 const route = express.Router();
 

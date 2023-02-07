@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import AddListForm from "./Form.jsx";
+import Loading from "./Loading.jsx";
+
+const noneDoStyle = {
+  backgroundColor: "rgb(228, 228, 228)",
+  color: "#000000",
+};
 
 export default function Table() {
   const [jadwal, updateJadwal] = useState([]);
   const [isLoading, setLoading] = useState(true);
-
-  const noneDoStyle = {
-    backgroundColor: "rgb(43, 43, 43)",
-    color: "#ffffff",
-  };
 
   const showDatas = () => {
     if (isLoading) {
       return (
         <tr>
           <td colSpan="4" style={noneDoStyle}>
-            Loading...
+            <Loading />
           </td>
         </tr>
       );
@@ -32,13 +33,14 @@ export default function Table() {
 
     return jadwal.map((e, i) => (
       <tr key={i}>
-        <td>{i + 1}</td>
+        <td id={e._id}>{i + 1}</td>
         <td>{e.kegiatan}</td>
-        <td>{e.tanggal}</td>
+        <td>{new Date(e.tanggal).toDateString()}</td>
         <td>
-          <button onClick={() => remove(e._id)} className="btn danger-btn">
-            Remove
-          </button>
+          <i
+            onClick={(el) => removeAnimate(el, e._id)}
+            className="fa-solid fa-trash fa-xl remove-btn"
+          ></i>
         </td>
       </tr>
     ));
@@ -55,7 +57,7 @@ export default function Table() {
     setLoading(false);
   }
 
-  async function remove(id) {
+  async function removeList(id) {
     const opt = {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
@@ -71,8 +73,20 @@ export default function Table() {
     if (!data.status) {
       alert("Ada yang tidak Beres");
     }
+  }
 
-    updateDatas();
+  function removeAnimate({ target }, id) {
+    const row = target.parentElement.parentElement;
+
+    row.classList.add("removed");
+
+    row.addEventListener("animationend", async () => {
+      await removeList(id);
+
+      await updateDatas();
+
+      row.classList.remove("removed");
+    });
   }
 
   useEffect(() => {
@@ -81,14 +95,14 @@ export default function Table() {
 
   return (
     <>
-      <AddListForm update={updateDatas} />
+      <AddListForm updateData={updateDatas} />
       <table>
         <thead>
           <tr>
-            <th width="3rem">No.</th>
+            <th width="1rem">No.</th>
             <th>Kegiatan</th>
             <th width="150rem">Tanggal</th>
-            <th>Remove</th>
+            <th width="2rem">Remove</th>
           </tr>
         </thead>
         <tbody>{showDatas()}</tbody>
