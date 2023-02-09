@@ -6,11 +6,12 @@ export default function AddListForm({ updateData }) {
   const [kegiatan, setKegiatan] = useState("");
   const spanInp = useRef();
   const inpText = useRef();
+  const formHead = useRef();
 
   function inpAnimateIn() {
     spanInp.current.style.translate = "0 -25px";
     spanInp.current.style.zIndex = "2";
-    spanInp.current.style.fontSize = "11px";
+    spanInp.current.style.transform = "scale(0.9)";
 
     inpText.current.style.borderColor = "green";
   }
@@ -18,7 +19,7 @@ export default function AddListForm({ updateData }) {
   function inpAnimateOut() {
     spanInp.current.style.translate = "0 0";
     spanInp.current.style.zIndex = "-1";
-    spanInp.current.style.fontSize = "12px";
+    spanInp.current.style.transform = "scale(1)";
 
     inpText.current.style.borderColor = "#4d4c4c";
   }
@@ -32,6 +33,8 @@ export default function AddListForm({ updateData }) {
   async function addData(e) {
     e.preventDefault();
 
+    const HARI_INI = Date.parse(new Date().toDateString());
+
     const opt = {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
@@ -39,7 +42,10 @@ export default function AddListForm({ updateData }) {
     };
 
     if (tanggal == "" || kegiatan == "") {
-      alert("Tanggal dan Kegiatan harus diisi dulu Maniezz!");
+      alert("Tanggal dan Kegiatan harus diisi dulu!");
+      return;
+    } else if (Date.parse(tanggal) < HARI_INI) {
+      alert("Udah Lewat Maniezz 🥰");
       return;
     }
 
@@ -68,7 +74,9 @@ export default function AddListForm({ updateData }) {
 
   return (
     <form autoComplete="off" id="add-kegiatan" onSubmit={(e) => addData(e)}>
-      <h1>Tambah Kegiatan</h1>
+      <div id="form-head" ref={formHead}>
+        <h1>Tambah Kegiatan</h1>
+      </div>
       <br />
       <div className="input">
         <span ref={spanInp}>

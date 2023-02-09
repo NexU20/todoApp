@@ -8,6 +8,43 @@ const noneDoStyle = {
   color: "#000000",
 };
 
+const BULAN_IND = {
+  Jan: "Jan",
+  Feb: "Feb",
+  Mar: "Mar",
+  Apr: "Apr",
+  May: "Mei",
+  Jun: "Juni",
+  Jul: "Juli",
+  Aug: "Agust",
+  Sep: "Sept",
+  Oct: "Okt",
+  Nov: "Nov",
+  Dec: "Des",
+};
+
+const HARI_IND = {
+  Mon: "Senin",
+  Tue: "Selasa",
+  Wed: "Rabu",
+  Thu: "Kamis",
+  Fri: "Jum'at",
+  Sat: "Sabtu",
+  Sun: "Minggu",
+};
+
+function translateDate(date) {
+  date = date.split(" ");
+  const Tanggal = [date[2]];
+  const Bulan = [date[1]];
+  const Hari = [date[0]];
+  const Tahun = [date[3]];
+
+  const result = `${HARI_IND[Hari]}, ${Tanggal} ${BULAN_IND[Bulan]} ${Tahun}`;
+
+  return result;
+}
+
 export default function Table() {
   const [jadwal, updateJadwal] = useState([]);
   const [isLoading, setLoading] = useState(true);
@@ -31,11 +68,21 @@ export default function Table() {
       );
     }
 
+    const HARI_INI = new Date().toDateString();
+
     return jadwal.map((e, i) => (
       <tr key={i}>
-        <td>{i + 1}</td>
+        <td style={{ fontWeight: "bold" }}>{i + 1}</td>
         <td>{e.kegiatan}</td>
-        <td>{new Date(e.tanggal).toDateString()}</td>
+        <td>
+          {HARI_INI == new Date(e.tanggal).toDateString() ? (
+            <span style={{ color: "rgb(255,0,0)", fontWeight: "bold" }}>
+              Hari Ini! 😁
+            </span>
+          ) : (
+            translateDate(new Date(e.tanggal).toDateString())
+          )}
+        </td>
         <td>
           <i
             onClick={(el) => removeAnimate(el, e._id)}
@@ -48,10 +95,28 @@ export default function Table() {
 
   async function updateDatas() {
     try {
-      const { data } = await axios.get("http://localhost:9000/api/");
+      let { data } = await axios.get("http://localhost:9000/api/");
+
+      const HARI_INI = Date.parse(new Date().toDateString());
+
+      data = data.map((el) => {
+        el["tanggal"] = Date.parse(el.tanggal);
+        return el;
+      });
+
+      data = data.sort((a, b) => a.tanggal - b.tanggal);
+
+      const listOfExp = data.filter(
+        (el) => Date.parse(new Date(el.tanggal).toDateString()) < HARI_INI
+      );
+
+      for (const exp of listOfExp) {
+        removeList(exp._id);
+      }
+
       updateJadwal(data);
     } catch (err) {
-      console.log("Ada yang tidak beres..");
+      console.log(err);
     }
 
     setLoading(false);
@@ -101,9 +166,9 @@ export default function Table() {
         <thead>
           <tr>
             <th width="1rem">No.</th>
-            <th>Kegiatan</th>
-            <th width="150rem">Tanggal</th>
-            <th width="2rem">Remove</th>
+            <th width="60%">Kegiatan</th>
+            <th>Tanggal</th>
+            <th width="1rem"></th>
           </tr>
         </thead>
         <tbody>{showDatas()}</tbody>
